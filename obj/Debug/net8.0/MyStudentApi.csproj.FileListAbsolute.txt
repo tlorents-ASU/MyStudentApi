@@ -134,3 +134,4 @@ C:\Users\tlorents\source\repos\MyStudentApi\MyStudentApi\obj\Debug\net8.0\refint
 C:\Users\tlorents\source\repos\MyStudentApi\MyStudentApi\obj\Debug\net8.0\MyStudentApi.pdb
 C:\Users\tlorents\source\repos\MyStudentApi\MyStudentApi\obj\Debug\net8.0\MyStudentApi.genruntimeconfig.cache
 C:\Users\tlorents\source\repos\MyStudentApi\MyStudentApi\obj\Debug\net8.0\ref\MyStudentApi.dll
+C:\Users\tlorents\source\repos\MyStudentApi\MyStudentApi\obj\Debug\net8.0\MyStudentApi.sourcelink.json

@@ -15,6 +15,8 @@ namespace MyStudentApi.Data
         public DbSet<ClassLookup> ClassLookups { get; set; }
         public DbSet<ClassSchedule2254> ClassSchedule2254 { get; set; }
         public DbSet<StudentClassAssignment> StudentClassAssignments { get; set; }
+        public DbSet<MastersIAGraderApplication2254> MastersIAGraderApplications { get; set; }
+
 
 
         // (Optional) If you need additional configuration via the Fluent API, override OnModelCreating:
