@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MyStudentApi.Data;
 using MyStudentApi.Models;
 using System.Threading.Tasks;
@@ -30,7 +31,8 @@ namespace MyStudentApi.Controllers
         }
 
         // Optional GET endpoint for a created assignment
-        [HttpGet("{id}")]
+        // GET: api/StudentClassAssignment/{id}
+        [HttpGet("{id:int}", Name = "GetAssignment")]
         public async Task<ActionResult<StudentClassAssignment>> GetAssignment(int id)
         {
             var assignment = await _context.StudentClassAssignments.FindAsync(id);
@@ -40,5 +42,17 @@ namespace MyStudentApi.Controllers
             }
             return assignment;
         }
+
+        [HttpGet("totalhours/{studentId}")]
+        public async Task<ActionResult<int>> GetTotalAssignedHours(int studentId)
+        {
+            // Sum the WeeklyHours for assignments matching the studentId.
+            // If there are no assignments, default to 0.
+            var totalHours = await _context.StudentClassAssignments
+                .Where(a => a.Student_ID == studentId)
+                .SumAsync(a => (int?)a.WeeklyHours) ?? 0;
+            return totalHours;
+        }
+
     }
 }

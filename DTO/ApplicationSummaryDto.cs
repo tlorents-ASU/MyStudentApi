@@ -21,5 +21,6 @@ namespace MyStudentApi.Models
         public string TranscriptUrl { get; set; } // nvarchar(MAX)
         public string ResumeUrl { get; set; } // nvarchar(MAX)
         public string HoursAvailable { get; set; }
+        public string? ProgrammingLanguage { get; set; }
     }
 }

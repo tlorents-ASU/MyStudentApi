@@ -39,6 +39,7 @@ namespace MyStudentApi.Controllers
                     PreferredCourses = app.PreferredCourses,
                     HoursAvailable = app.HoursAvailable,
                     TranscriptUrl = app.TranscriptUrl,
+                    ProgrammingLanguage = app.What_programming_languages_are_you_familiar_with,
                     ResumeUrl = app.ResumeUrl,
                     ExpectedGraduation = app.Expected_graduation_semester_month_year_in_mm_yyyy_format
                 })
