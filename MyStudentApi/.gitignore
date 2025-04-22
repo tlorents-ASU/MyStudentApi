@@ -2,9 +2,13 @@
 bin/
 obj/
 
-# Ignore Visual Studio temp files
+# Ignore Visual Studio temporary folders
 .vs/
 .vs/**
+.vs/**/CopilotIndices/
+.vs/**/CopilotIndices/**
+.vs/**/FileContentIndex/
+.vs/**/FileContentIndex/**
 
 # Visual Studio
 *.user
