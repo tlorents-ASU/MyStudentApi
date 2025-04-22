@@ -136,7 +136,9 @@ namespace MyStudentApi.Controllers
                     classInfo.InstructorFirstName,
                     classInfo.InstructorLastName,
                     classInfo.InstructorEmail,
-                    classInfo.Location
+                    classInfo.Location,
+                    classInfo.Campus,
+                    classInfo.AcadCareer
                 };
             }
             else if (term == "2251")

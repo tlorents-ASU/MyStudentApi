@@ -235,13 +235,13 @@
   {
     "ContainingType": "MyStudentApi.Controllers.StudentClassAssignmentController",
     "Method": "GetAssignment",
-    "RelativePath": "api/StudentClassAssignment/{studentId}",
+    "RelativePath": "api/StudentClassAssignment/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "studentId",
+        "Name": "id",
         "Type": "System.Int32",
         "IsRequired": true
       }
@@ -256,7 +256,8 @@
         ],
         "StatusCode": 200
       }
-    ]
+    ],
+    "EndpointName": "GetAssignment"
   },
   {
     "ContainingType": "MyStudentApi.Controllers.StudentClassAssignmentController",

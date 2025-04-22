@@ -21,5 +21,7 @@ namespace MyStudentApi.Models
         public string InstructorFirstName { get; set; }
         public string InstructorEmail { get; set; }
         public string Location { get; set; }
+        public string Campus { get; set; }
+        public string AcadCareer { get; set; }
     }
 }

@@ -30,5 +30,8 @@ namespace MyStudentApi.Models
 
         [MaxLength(50)]
         public string Location { get; set; }
+        public string Campus { get; set; }
+        public string AcadCareer { get; set; }
+        public string CostCenterKey { get; set; }
     }
 }
