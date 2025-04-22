@@ -2,9 +2,11 @@
 bin/
 obj/
 
-# Visual Studio
+# Ignore Visual Studio temp files
 .vs/
-.vs/*
+.vs/**
+
+# Visual Studio
 *.user
 *.suo
 
