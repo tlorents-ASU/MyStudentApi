@@ -25,7 +25,7 @@ namespace MyStudentApi.Models
        // public string InstructorName { get; set; }
         public string InstructorFirstName { get; set; }
         public string InstructorLastName { get; set; }
-        public float Compensation { get; set; }
+        public double Compensation { get; set; }
         public DateTime? CreatedAt { get; set; }
 
         [MaxLength(50)]
@@ -33,5 +33,7 @@ namespace MyStudentApi.Models
         public string Campus { get; set; }
         public string AcadCareer { get; set; }
         public string CostCenterKey { get; set; }
+        public string? First_Name { get; set; }
+        public string? Last_Name { get; set; }
     }
 }

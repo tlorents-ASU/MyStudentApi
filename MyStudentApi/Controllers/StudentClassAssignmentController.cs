@@ -32,15 +32,29 @@ namespace MyStudentApi.Controllers
 
         // Optional GET endpoint for a created assignment
         // GET: api/StudentClassAssignment/{id}
-        [HttpGet("{id:int}", Name = "GetAssignment")]
+        //[HttpGet("{id:int}", Name = "GetAssignment")]
+        //public async Task<ActionResult<StudentClassAssignment>> GetAssignment(int id)
+        //{
+        //    var assignment = await _context.StudentClassAssignments.FindAsync(id);
+        //    if (assignment == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return assignment;
+        //}
+
+        // GET all
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<StudentClassAssignment>>> GetAssignments()
+            => await _context.StudentClassAssignments.ToListAsync();
+
+        // GET by id
+        [HttpGet("{id}")]
         public async Task<ActionResult<StudentClassAssignment>> GetAssignment(int id)
         {
-            var assignment = await _context.StudentClassAssignments.FindAsync(id);
-            if (assignment == null)
-            {
-                return NotFound();
-            }
-            return assignment;
+            var a = await _context.StudentClassAssignments.FindAsync(id);
+            if (a == null) return NotFound();
+            return a;
         }
 
         [HttpGet("totalhours/{studentId}")]
