@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyStudentApi.Models;
+using YourNamespace.Models;
 
 namespace MyStudentApi.Data
 {
@@ -16,6 +17,7 @@ namespace MyStudentApi.Data
         public DbSet<ClassSchedule2254> ClassSchedule2254 { get; set; }
         public DbSet<StudentClassAssignment> StudentClassAssignments { get; set; }
         public DbSet<MastersIAGraderApplication2254> MastersIAGraderApplications { get; set; }
+        public DbSet<StudentLookup> StudentLookups { get; set; }
 
 
 
