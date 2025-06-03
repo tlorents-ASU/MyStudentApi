@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyStudentApi.Data;
+using MyStudentApi.DTO;
 using MyStudentApi.Models;
 using System.Threading.Tasks;
 
@@ -66,6 +67,24 @@ namespace MyStudentApi.Controllers
                 .Where(a => a.Student_ID == studentId)
                 .SumAsync(a => (int?)a.WeeklyHours) ?? 0;
             return totalHours;
+        }
+
+        // PUT: api/StudentClassAssignment/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAssignment(int id, [FromBody] StudentAssignmentUpdateDto dto)
+        {
+            var existing = await _context.StudentClassAssignments.FindAsync(id);
+            if (existing == null) return NotFound();
+
+            // Only update what the UI is allowed to modify
+            existing.Position_Number = dto.Position_Number;
+            existing.I9_Sent = dto.I9_Sent;
+            existing.SSN_Sent = dto.SSN_Sent;
+            existing.Offer_Sent = dto.Offer_Sent;
+            existing.Offer_Signed = dto.Offer_Signed;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
 
     }
