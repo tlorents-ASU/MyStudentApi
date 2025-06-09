@@ -3,7 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using MyStudentApi.Data;
 using MyStudentApi.DTO;
 using MyStudentApi.Models;
+using MyStudentApi.Helpers;
 using System.Threading.Tasks;
+using System.Formats.Asn1;
+using System.Globalization;
+using System.Text;
+using CsvHelper;
+using CsvHelper.Configuration;
+using System.IO;
+
 
 namespace MyStudentApi.Controllers
 {
@@ -16,19 +24,6 @@ namespace MyStudentApi.Controllers
         public StudentClassAssignmentController(AppDbContext context)
         {
             _context = context;
-        }
-
-        // POST: api/StudentClassAssignment
-        [HttpPost]
-        public async Task<ActionResult<StudentClassAssignment>> CreateAssignment([FromBody] StudentClassAssignment assignment)
-        {
-            // You could add validation here if needed.
-
-            _context.StudentClassAssignments.Add(assignment);
-            await _context.SaveChangesAsync();
-
-            // Returns a 201 Created with the location header pointing to the new assignment.
-            return CreatedAtAction(nameof(GetAssignment), new { id = assignment.Id }, assignment);
         }
 
         // Optional GET endpoint for a created assignment
@@ -69,6 +64,19 @@ namespace MyStudentApi.Controllers
             return totalHours;
         }
 
+        // POST: api/StudentClassAssignment
+        [HttpPost]
+        public async Task<ActionResult<StudentClassAssignment>> CreateAssignment([FromBody] StudentClassAssignment assignment)
+        {
+            // You could add validation here if needed.
+
+            _context.StudentClassAssignments.Add(assignment);
+            await _context.SaveChangesAsync();
+
+            // Returns a 201 Created with the location header pointing to the new assignment.
+            return CreatedAtAction(nameof(GetAssignment), new { id = assignment.Id }, assignment);
+        }
+
         // PUT: api/StudentClassAssignment/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAssignment(int id, [FromBody] StudentAssignmentUpdateDto dto)
@@ -85,6 +93,48 @@ namespace MyStudentApi.Controllers
 
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadAssignmentsFromCsv([FromForm] IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File is empty or missing.");
+
+            var assignments = new List<StudentClassAssignment>();
+            var now = DateTime.UtcNow;
+
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            using (var csv = new CsvReader(reader, new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                TrimOptions = TrimOptions.Trim,
+                IgnoreBlankLines = true,
+                HeaderValidated = null,
+                MissingFieldFound = null
+            }))
+            {
+                var records = csv.GetRecords<StudentClassAssignment>().ToList();
+
+                foreach (var record in records)
+                {
+                    // Ensure calculated fields are set
+                    record.CreatedAt = now;
+                    record.Term = "2254";
+                    record.Location = "TEMPE";
+                    record.Campus = "TEMPE";
+                    record.AcadCareer = "UGRD";
+
+                    record.Compensation = AssignmentUtils.CalculateCompensation(record);
+                    record.CostCenterKey = AssignmentUtils.ComputeCostCenterKey(record);
+
+                    assignments.Add(record);
+                }
+            }
+
+            _context.StudentClassAssignments.AddRange(assignments);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"{assignments.Count} records uploaded successfully." });
         }
 
     }

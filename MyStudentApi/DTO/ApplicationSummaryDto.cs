@@ -22,5 +22,14 @@ namespace MyStudentApi.Models
         public string ResumeUrl { get; set; } // nvarchar(MAX)
         public string HoursAvailable { get; set; }
         public string? ProgrammingLanguage { get; set; }
+        public string? TASpeakTestScoreOrIBT { get; set; }
+
+        public string? DissertationProposalStatus { get; set; }
+
+        [Required, StringLength(500)]
+        public string UndergraduateInstitution { get; set; }
+
+        [Required, StringLength(250)]
+        public string UndergraduateGPA { get; set; }
     }
 }

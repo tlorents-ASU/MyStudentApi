@@ -39,9 +39,12 @@ namespace MyStudentApi.Controllers
                     PreferredCourses = app.PreferredCourses,
                     HoursAvailable = app.HoursAvailable,
                     TranscriptUrl = app.TranscriptUrl,
-                    ProgrammingLanguage = app.What_programming_languages_are_you_familiar_with,
+                    ProgrammingLanguage = app.ProgrammingLanguages,
                     ResumeUrl = app.ResumeUrl,
-                    ExpectedGraduation = app.Expected_graduation_semester_month_year_in_mm_yyyy_format
+                    ExpectedGraduation = app.Expected_graduation_semester_month_year_in_mm_yyyy_format,
+                     DissertationProposalStatus = app.DissertationProposalStatus,
+                    UndergraduateInstitution = app.UndergraduateInstitution,
+                    UndergraduateGPA = app.UndergraduateGPA
                 })
                 .ToListAsync();
 
