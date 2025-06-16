@@ -95,6 +95,7 @@ namespace MyStudentApi.Controllers
             return NoContent();
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost("upload")]
         public async Task<IActionResult> UploadAssignmentsFromCsv([FromForm] IFormFile file)
         {
