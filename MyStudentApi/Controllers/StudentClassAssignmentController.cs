@@ -26,19 +26,6 @@ namespace MyStudentApi.Controllers
             _context = context;
         }
 
-        // Optional GET endpoint for a created assignment
-        // GET: api/StudentClassAssignment/{id}
-        //[HttpGet("{id:int}", Name = "GetAssignment")]
-        //public async Task<ActionResult<StudentClassAssignment>> GetAssignment(int id)
-        //{
-        //    var assignment = await _context.StudentClassAssignments.FindAsync(id);
-        //    if (assignment == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return assignment;
-        //}
-
         // GET all
         [HttpGet]
         public async Task<ActionResult<IEnumerable<StudentClassAssignment>>> GetAssignments()
