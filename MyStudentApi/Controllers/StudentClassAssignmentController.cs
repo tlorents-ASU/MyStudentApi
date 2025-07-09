@@ -73,7 +73,6 @@ namespace MyStudentApi.Controllers
 
             // Only update what the UI is allowed to modify
             existing.Position_Number = dto.Position_Number;
-            existing.I9_Sent = dto.I9_Sent;
             existing.SSN_Sent = dto.SSN_Sent;
             existing.Offer_Sent = dto.Offer_Sent;
             existing.Offer_Signed = dto.Offer_Signed;
