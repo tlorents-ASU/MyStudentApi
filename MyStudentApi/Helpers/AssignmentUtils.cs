@@ -1,44 +1,118 @@
 ﻿using MyStudentApi.Models;
+using System.Globalization;
 
 namespace MyStudentApi.Helpers
 {
     public static class AssignmentUtils
     {
+        // Compensation Table Logic
         public static double CalculateCompensation(StudentClassAssignment a)
         {
             int h = a.WeeklyHours;
-            if (a.Position == "TA")
+            string position = (a.Position ?? "").Trim();
+            string level = (a.EducationLevel ?? "").Trim().ToUpper();
+            string fellow = (a.FultonFellow ?? "").Trim();
+            string session = (a.ClassSession ?? "").Trim().ToUpper();
+
+            // Grader
+            if (position == "Grader" && (level == "MS" || level == "PHD") && fellow == "No")
             {
-                if (h == 10 && a.EducationLevel == "MS" && a.FultonFellow == "No") return 6636;
-                if (h == 10 && a.EducationLevel == "PHD" && a.FultonFellow == "No") return 7250;
-                if (h == 20 && a.EducationLevel == "MS" && a.FultonFellow == "No") return 13272;
-                if (h == 20 && a.EducationLevel == "PHD" && a.FultonFellow == "No") return 14500;
-                if (h == 20 && a.EducationLevel == "PHD" && a.FultonFellow == "Yes") return 13461.24;
+                if (h == 5)
+                {
+                    if (session == "A" || session == "B") return 781;
+                    if (session == "C") return 1562;
+                }
+                if (h == 10)
+                {
+                    if (session == "A" || session == "B") return 1562;
+                    if (session == "C") return 3124;
+                }
+                if (h == 15)
+                {
+                    if (session == "A" || session == "B") return 2343;
+                    if (session == "C") return 4686;
+                }
+                if (h == 20)
+                {
+                    if (session == "A" || session == "B") return 3124;
+                    if (session == "C") return 6248;
+                }
             }
 
-            if (a.Position == "TA (GSA) 1 credit")
+            // TA (GSA) 1 credit
+            if (position == "TA (GSA) 1 credit" && level == "PHD" && fellow == "No")
             {
-                if (h == 10 && a.EducationLevel == "PHD" && a.FultonFellow == "No") return 7552.5;
-                if (h == 20 && a.EducationLevel == "PHD" && a.FultonFellow == "No") return 16825;
+                if (h == 10 && (session == "A" || session == "B" || session == "C")) return 7552.5;
+                if (h == 20 && (session == "A" || session == "B" || session == "C")) return 16825;
             }
 
-            if (a.Position == "IA")
+            // TA
+            if (position == "TA")
             {
-                var baseFactor = a.ClassSession == "C" ? 2 : 1;
-                if (a.EducationLevel == "MS" || a.EducationLevel == "PHD")
-                    return baseFactor * 1100 * (h / 5);
+                if (h == 20 && level == "PHD" && fellow == "Yes" && (session == "A" || session == "B" || session == "C"))
+                    return 13461.15;
+                if (h == 10 && level == "MS" && fellow == "No" && (session == "A" || session == "B" || session == "C"))
+                    return 6636;
+                if (h == 10 && level == "PHD" && fellow == "No" && (session == "A" || session == "B" || session == "C"))
+                    return 7250;
+                if (h == 20 && level == "MS" && fellow == "No" && (session == "A" || session == "B" || session == "C"))
+                    return 13272;
+                if (h == 20 && level == "PHD" && fellow == "No" && (session == "A" || session == "B" || session == "C"))
+                    return 14500;
+            }
+
+            // IA
+            if (position == "IA" && (level == "MS" || level == "PHD") && fellow == "No")
+            {
+                if (h == 5)
+                {
+                    if (session == "A" || session == "B") return 1100;
+                    if (session == "C") return 2200;
+                }
+                if (h == 10)
+                {
+                    if (session == "A" || session == "B") return 2200;
+                    if (session == "C") return 4400;
+                }
+                if (h == 15)
+                {
+                    if (session == "A" || session == "B") return 2640;
+                    if (session == "C") return 6600;
+                }
+                if (h == 20)
+                {
+                    if (session == "A" || session == "B") return 4400;
+                    if (session == "C") return 8800;
+                }
             }
 
             return 0;
         }
 
+        // Infer AcadCareer from CatalogNum
+        public static string InferAcadCareer(StudentClassAssignment a)
+        {
+            int num;
+            if (int.TryParse(a.CatalogNum, out num))
+            {
+                return (num >= 100 && num <= 499) ? "UGRD" : "GRAD";
+            }
+            return "UGRD";
+        }
+
+        // Cost Center Logic
         public static string ComputeCostCenterKey(StudentClassAssignment a)
         {
+            // AcadCareer is inferred on the fly for matching rules
+            string acadCareer = a.AcadCareer;
+            if (string.IsNullOrWhiteSpace(acadCareer))
+                acadCareer = InferAcadCareer(a);
+
             var match = CostCenterRules.FirstOrDefault(rule =>
                 rule.Position == a.Position &&
                 rule.Location?.ToUpper() == a.Location?.ToUpper() &&
                 rule.Campus?.ToUpper() == a.Campus?.ToUpper() &&
-                rule.AcadCareer?.ToUpper() == a.AcadCareer?.ToUpper()
+                rule.AcadCareer?.ToUpper() == acadCareer?.ToUpper()
             );
 
             return match?.CostCenterKey ?? "UNKNOWN";
@@ -53,56 +127,46 @@ namespace MyStudentApi.Helpers
             new("TA (GSA) 1 credit", "TEMPE",     "TEMPE", "GRAD", "CC0136/PG06875"),
             new("TA (GSA) 1 credit", "POLY",      "POLY",  "UGRD", "CC0136/PG02202"),
             new("TA (GSA) 1 credit", "POLY",      "POLY",  "GRAD", "CC0136/PG06875"),
-            new("TA (GSA) 1 credit", "ASUONLINE", "TEMPE", "UGRD", "CC0136/PG01943"),
-            new("TA (GSA) 1 credit", "ASUONLINE", "TEMPE", "GRAD", "CC0136/PG06316"),
-            new("TA (GSA) 1 credit", "ASUONLINE", "POLY",  "UGRD", "CC0136/PG02003"),
-            new("TA (GSA) 1 credit", "ASUONLINE", "POLY",  "GRAD", "------"),
             new("TA (GSA) 1 credit", "ICOURSE",   "TEMPE", "UGRD", "CC0136/PG01943"),
             new("TA (GSA) 1 credit", "ICOURSE",   "TEMPE", "GRAD", "CC0136/PG06316"),
             new("TA (GSA) 1 credit", "ICOURSE",   "POLY",  "UGRD", "CC0136/PG02003"),
-            new("TA (GSA) 1 credit", "ICOURSE",   "POLY",  "GRAD", "------"),
-
-            // === IA ===
-            new("IA", "TEMPE",     "TEMPE", "UGRD", "CC0136/PG15818"),
-            new("IA", "TEMPE",     "TEMPE", "GRAD", "CC0136/PG15818"),
-            new("IA", "POLY",      "POLY",  "UGRD", "CC0136/PG15818"),
-            new("IA", "POLY",      "POLY",  "GRAD", "CC0136/PG15818"),
-            new("IA", "ASUONLINE", "TEMPE", "UGRD", "CC0136/PG01943"),
-            new("IA", "ASUONLINE", "TEMPE", "GRAD", "CC0136/PG01943"),
-            new("IA", "ASUONLINE", "POLY",  "UGRD", "CC0136/PG02003"),
-            new("IA", "ASUONLINE", "POLY",  "GRAD", "CC0136/PG02003"),
-            new("IA", "ICOURSE",   "TEMPE", "UGRD", "CC0136/PG01943"),
-            new("IA", "ICOURSE",   "TEMPE", "GRAD", "CC0136/PG01943"),
-            new("IA", "ICOURSE",   "POLY",  "UGRD", "CC0136/PG02003"),
-            new("IA", "ICOURSE",   "POLY",  "GRAD", "CC0136/PG02003"),
-
-            // === Grader ===
-            new("Grader", "TEMPE",     "TEMPE", "UGRD", "CC0136/PG14700"),
-            new("Grader", "TEMPE",     "TEMPE", "GRAD", "CC0136/PG14700"),
-            new("Grader", "POLY",      "POLY",  "UGRD", "CC0136/PG14700"),
-            new("Grader", "POLY",      "POLY",  "GRAD", "CC0136/PG14700"),
-            new("Grader", "ASUONLINE", "TEMPE", "UGRD", "CC0136/PG01943"),
-            new("Grader", "ASUONLINE", "TEMPE", "GRAD", "CC0136/PG06316"),
-            new("Grader", "ASUONLINE", "POLY",  "UGRD", "CC0136/PG02003"),
-            new("Grader", "ASUONLINE", "POLY",  "GRAD", "------"),
-            new("Grader", "ICOURSE",   "TEMPE", "UGRD", "CC0136/PG01943"),
-            new("Grader", "ICOURSE",   "TEMPE", "GRAD", "CC0136/PG06316"),
-            new("Grader", "ICOURSE",   "POLY",  "UGRD", "CC0136/PG02003"),
-            new("Grader", "ICOURSE",   "POLY",  "GRAD", "------"),
 
             // === TA ===
             new("TA", "TEMPE",     "TEMPE", "UGRD", "CC0136/PG02202"),
             new("TA", "TEMPE",     "TEMPE", "GRAD", "CC0136/PG06875"),
             new("TA", "POLY",      "POLY",  "UGRD", "CC0136/PG02202"),
             new("TA", "POLY",      "POLY",  "GRAD", "CC0136/PG06875"),
-            new("TA", "ASUONLINE", "TEMPE", "UGRD", "CC0136/PG01943"),
-            new("TA", "ASUONLINE", "TEMPE", "GRAD", "CC0136/PG06316"),
-            new("TA", "ASUONLINE", "POLY",  "UGRD", "CC0136/PG02003"),
-            new("TA", "ASUONLINE", "POLY",  "GRAD", "------"),
             new("TA", "ICOURSE",   "TEMPE", "UGRD", "CC0136/PG01943"),
             new("TA", "ICOURSE",   "TEMPE", "GRAD", "CC0136/PG06316"),
             new("TA", "ICOURSE",   "POLY",  "UGRD", "CC0136/PG02003"),
-            new("TA", "ICOURSE",   "POLY",  "GRAD", "------")
+
+            // === IOR ===
+            new("IOR", "TEMPE",     "TEMPE", "UGRD", "CC0136/PG02202"),
+            new("IOR", "TEMPE",     "TEMPE", "GRAD", "CC0136/PG06875"),
+            new("IOR", "POLY",      "POLY",  "UGRD", "CC0136/PG02202"),
+            new("IOR", "POLY",      "POLY",  "GRAD", "CC0136/PG06875"),
+            new("IOR", "ICOURSE",   "TEMPE", "UGRD", "CC0136/PG01943"),
+            new("IOR", "ICOURSE",   "TEMPE", "GRAD", "CC0136/PG06316"),
+            new("IOR", "ICOURSE",   "POLY",  "UGRD", "CC0136/PG02003"),
+
+            // === Grader ===
+            new("Grader", "TEMPE",     "TEMPE", "UGRD", "CC0136/PG14700"),
+            new("Grader", "TEMPE",     "TEMPE", "GRAD", "CC0136/PG14700"),
+            new("Grader", "POLY",      "POLY",  "UGRD", "CC0136/PG14700"),
+            new("Grader", "POLY",      "POLY",  "GRAD", "CC0136/PG14700"),
+            new("Grader", "ICOURSE",   "TEMPE", "UGRD", "CC0136/PG01943"),
+            new("Grader", "ICOURSE",   "TEMPE", "GRAD", "CC0136/PG06316"),
+            new("Grader", "ICOURSE",   "POLY",  "UGRD", "CC0136/PG02003"),
+
+            // === IA ===
+            new("IA", "TEMPE",     "TEMPE", "UGRD", "CC0136/PG15818"),
+            new("IA", "TEMPE",     "TEMPE", "GRAD", "CC0136/PG15818"),
+            new("IA", "POLY",      "POLY",  "UGRD", "CC0136/PG15818"),
+            new("IA", "POLY",      "POLY",  "GRAD", "CC0136/PG15818"),
+            new("IA", "ICOURSE",   "TEMPE", "UGRD", "CC0136/PG01943"),
+            new("IA", "ICOURSE",   "TEMPE", "GRAD", "CC0136/PG01943"),
+            new("IA", "ICOURSE",   "POLY",  "UGRD", "CC0136/PG02003"),
+            new("IA", "ICOURSE",   "POLY",  "GRAD", "CC0136/PG02003")
         };
     }
 }
