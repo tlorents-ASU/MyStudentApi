@@ -92,12 +92,7 @@ namespace MyStudentApi.Helpers
         // Infer AcadCareer from CatalogNum
         public static string InferAcadCareer(StudentClassAssignment a)
         {
-            int num;
-            if (int.TryParse(a.CatalogNum, out num))
-            {
-                return (num >= 100 && num <= 499) ? "UGRD" : "GRAD";
-            }
-            return "UGRD";
+            return (a.CatalogNum >= 100 && a.CatalogNum <= 499) ? "UGRD" : "GRAD";
         }
 
         // Cost Center Logic
